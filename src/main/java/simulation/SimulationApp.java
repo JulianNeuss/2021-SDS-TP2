@@ -11,7 +11,7 @@ import java.util.Properties;
 public class SimulationApp {
     private static final String DEFAULT_INPUT_FILENAME = "./data/initialSetup.txt";
     private static final String DEFAULT_OUTPUT_FILENAME = "./data/output.txt";
-    private static final int DEFAULT_ITERATIONS = 10000;
+    private static final int DEFAULT_ITERATIONS = 100;
     private static final boolean END_ON_TOUCH_BORDER = true;
 
     public static void main(String[] args) {
@@ -66,8 +66,8 @@ public class SimulationApp {
                 boolean touchBorder = false;
                 for (int iteration = 0; (endOnTouchBorder && !touchBorder && (iteration < maxIterations)) || (!endOnTouchBorder && iteration < maxIterations); iteration++) {
                     cells = GameOfLife2D.nextRound(cells);
-                    touchBorder = touchBorder2D(cells);
-                    str.append(aliveQty2D(cells)).append('\n');
+                    touchBorder = MatrixOperations.touchBorder2D(cells);
+                    str.append(MatrixOperations.aliveQty2D(cells)).append(' ').append(MatrixOperations.maxDistance2D(cells)).append('\n');
                     str.append('\n');
                     for (List<Cell> rows : cells) {
                         for (Cell cell : rows) {
@@ -85,8 +85,8 @@ public class SimulationApp {
                 boolean touchBorder = false;
                 for (int iteration = 0; (endOnTouchBorder && !touchBorder && (iteration < maxIterations)) || (!endOnTouchBorder && iteration < maxIterations); iteration++) {
                     cells = GameOfLife3D.nextRound(cells);
-                    touchBorder = touchBorder3D(cells);
-                    str.append(aliveQty3D(cells)).append('\n');
+                    touchBorder = MatrixOperations.touchBorder3D(cells);
+                    str.append(MatrixOperations.aliveQty3D(cells)).append(' ').append(MatrixOperations.maxDistance3D(cells)).append('\n');
                     str.append('\n');
                     for (List<List<Cell>> rows : cells) {
                         for (List<Cell> columns : rows) {
@@ -111,109 +111,5 @@ public class SimulationApp {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    private static boolean touchBorder2D(List<List<Cell>> cells) {
-        // ROW = 0
-        for (Cell cell : cells.get(0)){
-            if (cell.isAlive())
-                return true;
-        }
-
-        // ROW = SIZE - 1
-        for (Cell cell : cells.get(cells.size() - 1)){
-            if (cell.isAlive())
-                return true;
-        }
-
-        // COLUMN = 0
-        for (List<Cell> row : cells){
-            if(row.get(0).isAlive())
-                return true;
-        }
-
-        // COLUMN = SIZE - 1
-        for (List<Cell> row : cells){
-            if(row.get(cells.get(0).size() - 1).isAlive())
-                return true;
-        }
-
-        return false;
-    }
-
-    private static boolean touchBorder3D(List<List<List<Cell>>> cells) {
-        // ROW = 0
-        for (List<Cell> column : cells.get(0)){
-            for(Cell cell : column){
-                if(cell.isAlive())
-                    return true;
-            }
-        }
-
-        // ROW = SIZE - 1
-        for (List<Cell> column : cells.get(cells.size() - 1)){
-            for(Cell cell : column){
-                if(cell.isAlive())
-                    return true;
-            }
-        }
-
-        // COLUMN = 0
-        for (List<List<Cell>> row : cells) {
-            for(Cell cell : row.get(0)){
-                if (cell.isAlive())
-                    return true;
-            }
-        }
-
-        // COLUMN = SIZE - 1
-        for (List<List<Cell>> row : cells) {
-            for(Cell cell : row.get(cells.get(0).size() - 1)){
-                if (cell.isAlive())
-                    return true;
-            }
-        }
-
-        // DEPTH = 0
-        for (List<List<Cell>> row : cells){
-            for (List<Cell> column : row){
-                if(column.get(0).isAlive())
-                    return true;
-            }
-        }
-
-        // DEPTH = SIZE - 1
-        for (List<List<Cell>> row : cells){
-            for (List<Cell> column : row){
-                if(column.get(cells.get(0).get(0).size() - 1).isAlive())
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static int aliveQty2D(List<List<Cell>> cells) {
-        int aliveQty = 0;
-        for (List<Cell> row : cells){
-            for (Cell cell : row){
-                if(cell.isAlive())
-                    aliveQty++;
-            }
-        }
-        return aliveQty;
-    }
-
-    private static int aliveQty3D(List<List<List<Cell>>> cells) {
-        int aliveQty = 0;
-        for (List<List<Cell>> row : cells){
-            for (List<Cell> column : row){
-                for (Cell cell : column){
-                    if(cell.isAlive())
-                        aliveQty++;
-                }
-            }
-        }
-        return aliveQty;
     }
 }

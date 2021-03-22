@@ -23,7 +23,9 @@ public class Parser {
             int rows = Integer.parseInt(matrixSizes[0]);
             int columns = Integer.parseInt(matrixSizes[1]);
             scanner.nextLine(); // skip line
-            int aliveQty = Integer.parseInt(scanner.nextLine().trim());
+            String[] matrixAnalytics = scanner.nextLine().trim().split(" ", 2);
+            int aliveQty = Integer.parseInt(matrixAnalytics[0]);
+            double maxDistance = Double.parseDouble(matrixAnalytics[1]);
 
             List<List<Cell>> cells = new ArrayList<>(rows);
             scanner.nextLine(); // Skip line
@@ -35,7 +37,7 @@ public class Parser {
                 }
             }
 
-            return new ParserResult(dimension, rows, columns, -1, aliveQty, cells, null);
+            return new ParserResult(dimension, rows, columns, -1, aliveQty, maxDistance, cells, null);
         } else {
 
             String[] matrixSizes = scanner.nextLine().trim().split(" ", 3);
@@ -43,7 +45,9 @@ public class Parser {
             int columns = Integer.parseInt(matrixSizes[1]);
             int depths = Integer.parseInt(matrixSizes[2]);
             scanner.nextLine(); // skip line
-            int aliveQty = Integer.parseInt(scanner.nextLine().trim());
+            String[] matrixAnalytics = scanner.nextLine().trim().split(" ", 2);
+            int aliveQty = Integer.parseInt(matrixAnalytics[0]);
+            double maxDistance = Double.parseDouble(matrixAnalytics[1]);
 
             List<List<List<Cell>>> cells = new ArrayList<>(rows);
             for (int row = 0; row < rows; row++) {
@@ -59,7 +63,7 @@ public class Parser {
                 }
             }
 
-            return new ParserResult(dimension, rows, columns, depths, aliveQty, null, cells);
+            return new ParserResult(dimension, rows, columns, depths, aliveQty, maxDistance, null, cells);
         }
     }
 }

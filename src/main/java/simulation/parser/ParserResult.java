@@ -11,15 +11,17 @@ public class ParserResult {
     private final int columns;
     private final int depth;
     private final int aliveQty;
+    private final double maxDistance;
     private final List<List<Cell>> cells2D;
     private final List<List<List<Cell>>> cells3D;
 
-    public ParserResult(Dimension dimension, int rows, int columns, int depth, int aliveQty, List<List<Cell>> cells2D, List<List<List<Cell>>> cells3D) {
+    public ParserResult(Dimension dimension, int rows, int columns, int depth, int aliveQty, double maxDistance, List<List<Cell>> cells2D, List<List<List<Cell>>> cells3D) {
         this.dimension = dimension;
         this.rows = rows;
         this.columns = columns;
         this.depth = depth;
         this.aliveQty = aliveQty;
+        this.maxDistance = maxDistance;
         this.cells2D = cells2D;
         this.cells3D = cells3D;
     }
@@ -44,6 +46,10 @@ public class ParserResult {
 
     public int getAliveQty() {
         return aliveQty;
+    }
+
+    public double getMaxDistance() {
+        return maxDistance;
     }
 
     public List<List<Cell>> getCells2D() {
