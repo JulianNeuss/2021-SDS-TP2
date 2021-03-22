@@ -9,6 +9,9 @@ compile:
 
 GenerateInitialFile: compile
 	java -cp out simulation.generator.GenerateInitialFile
-	
+
 SimulationApp: compile
 	java -cp out simulation.SimulationApp
+
+visualizer:
+	@bash -c "cd visualization;source .env/bin/activate;python visualizer.py"
