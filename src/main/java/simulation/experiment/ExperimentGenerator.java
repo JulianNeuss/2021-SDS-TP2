@@ -12,17 +12,17 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class ExperimentGenerator {
-    private static final String DEFAULT_OUTPUT_FILENAME = "./data/test2d.txt";
-    private static final int DEFAULT_ROWS = 20;
-    private static final int DEFAULT_COLUMNS = 20;
-    private static final int DEFAULT_DEPTHS = 20;
-    private static final int DEFAULT_INITIAL_ROWS = 10;
-    private static final int DEFAULT_INITIAL_COLUMNS = 10;
-    private static final int DEFAULT_INITIAL_DEPTH = 10;
-    private static final double DEFAULT_MIN_PERCENTAGE_ALIVE = 0.01;
+    private static final String DEFAULT_OUTPUT_FILENAME = "./data/test.txt";
+    private static final int DEFAULT_ROWS = 100;
+    private static final int DEFAULT_COLUMNS = 100;
+    private static final int DEFAULT_DEPTHS = 100;
+    private static final int DEFAULT_INITIAL_ROWS = 5;
+    private static final int DEFAULT_INITIAL_COLUMNS = 5;
+    private static final int DEFAULT_INITIAL_DEPTH = 5;
+    private static final double DEFAULT_MIN_PERCENTAGE_ALIVE = 0;
     private static final double DEFAULT_MAX_PERCENTAGE_ALIVE = 1;
     private static final int DEFAULT_PERCENTAGES_QTY = 6;
-    private static final Dimension DEFAULT_DIMENSION = Dimension.TWO_D;
+    private static final Dimension DEFAULT_DIMENSION = Dimension.THREE_D;
     private static final int DEFAULT_ITERATIONS = 100;
     private static final boolean END_ON_TOUCH_BORDER = true;
     private static final int DEFAULT_NUMBER_OF_RUNS = 10;
@@ -99,7 +99,7 @@ public class ExperimentGenerator {
         double percentageStep = (maxPercentageAlive - minPercentageAlive)/percentageQty;
         double percentageAlive = minPercentageAlive;
         if (dimension == Dimension.TWO_D) {
-            for (int percentageIteration = 0; percentageIteration < percentageQty; percentageAlive = Math.min(1, percentageAlive + percentageStep), percentageIteration++) {
+            for (int percentageIteration = 0; percentageIteration <= percentageQty; percentageAlive = Math.min(1, percentageAlive + percentageStep), percentageIteration++) {
                 for (int run = 0; run < numberOfRuns; run++) {
                     boolean touchBorder = false;
                     List<List<Cell>> cells = MatrixGenerator2D.generate(rows, columns, initialRows, initialColumns, percentageAlive);

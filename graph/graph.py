@@ -35,7 +35,6 @@ for line in f.readlines():
         line_number += 1
     else:
         iterationAnalytics = line.split(SEPARATOR)
-        print(iterationAnalytics)
         alive_qty_list[len(percentage_list) - 1].append(float(iterationAnalytics[1]))
         max_distance_list[len(percentage_list) - 1].append(float(iterationAnalytics[2]))
         line_number += 1
@@ -50,7 +49,7 @@ plt.xlabel("Iteración")
 plt.ylabel("Cantidad de celdas")
 for i in range(0, len(alive_qty_list)):
     times = range(0, len(alive_qty_list[i]))
-    plt.plot(times, alive_qty_list[i], label="{:.3f}%".format(percentage_list[i]))
+    plt.plot(times, alive_qty_list[i], label="{:.2f}%".format(percentage_list[i] * 100))
 plt.legend(loc='best')
 plt.show(block=False)
 
@@ -61,6 +60,6 @@ plt.xlabel("Iteración")
 plt.ylabel("Distancia")
 for i in range(0, len(max_distance_list)):
     times = range(0, len(max_distance_list[i]))
-    plt.plot(times, max_distance_list[i], label="{:.3f}%".format(percentage_list[i]))
+    plt.plot(times, max_distance_list[i], label="{:.2f}%".format(percentage_list[i] * 100))
 plt.legend(loc='best')
 plt.show()
