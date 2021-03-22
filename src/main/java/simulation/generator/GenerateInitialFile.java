@@ -13,11 +13,15 @@ import java.util.Properties;
 
 public class GenerateInitialFile {
     private static final String DEFAULT_INPUT_FILENAME = "./data/initialSetup.txt";
-    private static final int DEFAULT_ROWS = 10;
-    private static final int DEFAULT_COLUMNS = 10;
-    private static final int DEFAULT_DEPTHS = 10;
+    private static final int DEFAULT_ROWS = 50;
+    private static final int DEFAULT_COLUMNS = 50;
+    private static final int DEFAULT_DEPTHS = 50;
+    private static final int DEFAULT_INITIAL_ROWS = 10;
+    private static final int DEFAULT_INITIAL_COLUMNS = 10;
+    private static final int DEFAULT_INITIAL_DEPTH = 10;
     private static final double DEFAULT_PERCENTAGE_ALIVE = 0.25;
     private static final Dimension DEFAULT_DIMENSION = Dimension.TWO_D;
+
 
     public static void main(String[] args) {
         Properties properties = System.getProperties();
@@ -37,6 +41,18 @@ public class GenerateInitialFile {
         if( properties.getProperty("depths")!= null ){
             depths = Integer.parseInt(properties.getProperty("depths"));
         }
+        int initialRows = DEFAULT_INITIAL_ROWS;
+        if( properties.getProperty("initialRows")!= null ) {
+            initialRows = Integer.parseInt(properties.getProperty("initialRows"));
+        }
+        int initialColumns = DEFAULT_INITIAL_COLUMNS;
+        if( properties.getProperty("initialColumns")!= null ){
+            initialColumns = Integer.parseInt(properties.getProperty("initialColumns"));
+        }
+        int initialDepths = DEFAULT_INITIAL_DEPTH;
+        if( properties.getProperty("initialDepths")!= null ){
+            initialDepths = Integer.parseInt(properties.getProperty("initialDepths"));
+        }
         double percentageAlive = DEFAULT_PERCENTAGE_ALIVE;
         if( properties.getProperty("percentageAlive")!= null ){
             percentageAlive = Double.parseDouble(properties.getProperty("percentageAlive"));
@@ -50,7 +66,7 @@ public class GenerateInitialFile {
         StringBuilder str = new StringBuilder();
 
         if(dimension == Dimension.TWO_D){
-            List<List<Cell>> cells = MatrixGenerator2D.generate(rows, columns, percentageAlive);
+            List<List<Cell>> cells = MatrixGenerator2D.generate(rows, columns, initialRows, initialColumns, percentageAlive);
 
             str.append(dimension.toString()).append('\n');
             str.append(rows).append(' ').append(columns).append('\n');
@@ -62,7 +78,7 @@ public class GenerateInitialFile {
                 str.append('\n');
             }
         } else {
-            List<List<List<Cell>>> cells = MatrixGenerator3D.generate(rows, columns, depths, percentageAlive);
+            List<List<List<Cell>>> cells = MatrixGenerator3D.generate(rows, columns, depths, initialRows, initialColumns, initialDepths, percentageAlive);
 
             str.append(Dimension.THREE_D.toString()).append('\n');
             str.append(rows).append(' ').append(columns).append(' ').append(depths).append('\n');
