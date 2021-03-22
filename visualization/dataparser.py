@@ -42,7 +42,20 @@ def parse2d(f,simdata):
             mat[i][j] = int(line[j])
     return mat
 
+def parse3d(f,simdata):
+    mat = [[ [0] * simdata.sim_size[0]] * simdata.sim_size[1]] * simdata.sim_size[2]
+    for i in range(simdata.sim_size[0]):
+        for j in range(simdata.sim_size[1]):
+            line = f.readline().strip().split(" ")
+            for k in range(simdata.sim_size[2]):
+                mat[i][j][k] = int(line[j])
+        f.readline()
+    return mat
+
+
 def data_parser(filepath):
+    TYPE_2D = "2D"
+    TYPE_3D = "3D"
 
     f = open(filepath)
     simdata = SimulationData()
@@ -60,7 +73,10 @@ def data_parser(filepath):
         line = line.strip().split(" ")
         frame = Frame(time=int(line[0]),distance_from_border=float(line[1]))
         line = f.readline()
-        mat = parse2d(f,simdata)
+        if simdata.sim_type == TYPE_3D:
+            mat = parse3d(f,simdata)
+        else:
+            mat = parse2d(f,simdata)
         frame.mat = mat
         simdata.add_frame(frame)
     return simdata
