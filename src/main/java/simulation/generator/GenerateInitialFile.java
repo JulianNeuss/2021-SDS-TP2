@@ -71,6 +71,8 @@ public class GenerateInitialFile {
             str.append(dimension.toString()).append('\n');
             str.append(rows).append(' ').append(columns).append('\n');
             str.append('\n');
+            str.append(aliveQty2D(cells)).append('\n');
+            str.append('\n');
             for (List<Cell> rowsList : cells) {
                 for (Cell cell : rowsList){
                     str.append(cell.isAlive()?'1':'0').append(' ');
@@ -82,6 +84,8 @@ public class GenerateInitialFile {
 
             str.append(Dimension.THREE_D.toString()).append('\n');
             str.append(rows).append(' ').append(columns).append(' ').append(depths).append('\n');
+            str.append('\n');
+            str.append(aliveQty3D(cells)).append('\n');
             str.append('\n');
             for (List<List<Cell>> rowsList : cells) {
                 for (List<Cell> columnsList : rowsList){
@@ -111,4 +115,30 @@ public class GenerateInitialFile {
             e.printStackTrace();
         }
     }
+
+    private static int aliveQty2D(List<List<Cell>> cells) {
+        int aliveQty = 0;
+        for (List<Cell> row : cells){
+            for (Cell cell : row){
+                if(cell.isAlive())
+                    aliveQty++;
+            }
+        }
+        return aliveQty;
+    }
+
+    private static int aliveQty3D(List<List<List<Cell>>> cells) {
+        int aliveQty = 0;
+        for (List<List<Cell>> row : cells){
+            for (List<Cell> column : row){
+                for (Cell cell : column){
+                    if(cell.isAlive())
+                        aliveQty++;
+                }
+            }
+        }
+        return aliveQty;
+    }
+
+
 }
