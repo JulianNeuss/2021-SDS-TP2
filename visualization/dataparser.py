@@ -35,7 +35,7 @@ class SimulationData:
 
 
 def parse2d(f,simdata):
-    mat = [ [0] * simdata.sim_size[0]] * simdata.sim_size[1]
+    mat = [[0 for x in range(simdata.sim_size[1])] for y in range(simdata.sim_size[0])]
     for i in range(simdata.sim_size[0]):
         line = f.readline().strip().split(" ")
         for j in range(simdata.sim_size[1]):
@@ -43,7 +43,7 @@ def parse2d(f,simdata):
     return mat
 
 def parse3d(f,simdata):
-    mat = [[ [0] * simdata.sim_size[0]] * simdata.sim_size[1]] * simdata.sim_size[2]
+    mat = [[[0 for x in range(simdata.sim_size[2])] for y in range(simdata.sim_size[1])] for z in range(simdata.sim_size[0])]
     for i in range(simdata.sim_size[0]):
         for j in range(simdata.sim_size[1]):
             line = f.readline().strip().split(" ")
