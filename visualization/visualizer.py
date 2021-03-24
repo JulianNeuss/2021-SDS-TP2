@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from dataparser import *
-from matplotlib.ticker import AutoMinorLocator
+from matplotlib.colors import ListedColormap
 
 simdata = data_parser("../data/output.txt")
 
@@ -33,7 +33,7 @@ if simdata.sim_type == "3D":
     
     plt.show()
 else:
-    mat = plt.matshow(simdata.frames[0].mat, extent=[0, simdata.sim_size[0], 0, simdata.sim_size[1]])
+    mat = plt.matshow(simdata.frames[0].mat, extent=[0, simdata.sim_size[0], 0, simdata.sim_size[1]], cmap=ListedColormap(['w', 'k']))
 
     def update_func2d(frame, *fargs):
         global mat
