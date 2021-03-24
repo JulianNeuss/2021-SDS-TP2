@@ -17,12 +17,12 @@ class SimulationData:
     def sim_type(self):
         return self._sim_type
 
-    def sim_type(self,t):
+    def sim_type(self, t):
         self._sim_type = t
 
     def sim_size(self):
         return self._sim_size
-    def sim_size(self,s):
+    def sim_size(self, s):
         self._sim_size = s
 
     def add_frame(self,frame):
@@ -60,7 +60,7 @@ def data_parser(filepath):
     f = open(filepath)
     simdata = SimulationData()
     simdata.sim_type = f.readline().strip()
-    simdata.sim_size = list(map(int,f.readline().strip().split(" ")))
+    simdata.sim_size = list(map(int, f.readline().strip().split(" ")))
     
     finished=False
     while not finished:
@@ -71,7 +71,7 @@ def data_parser(filepath):
             finished = True
             continue
         line = line.strip().split(" ")
-        frame = Frame(time=int(line[0]),distance_from_border=float(line[1]))
+        frame = Frame(time=int(line[0]), distance_from_border=float(line[1]))
         line = f.readline()
         if simdata.sim_type == TYPE_3D:
             mat = parse3d(f,simdata)
