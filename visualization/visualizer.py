@@ -38,12 +38,16 @@ else:
 
     def update_func2d(frame, *fargs):
         global mat
+        # TODO:check
+        global ax
+        ax.set_title("Time:{}".format(frame.time),fontdict={'fontsize':20})
         mat.set_data(frame.mat)
         return mat
         
     ani = FuncAnimation(plt.gcf(), update_func2d, frames=simdata.frames, interval=500, repeat=True, repeat_delay=500, save_count=len(simdata.frames))
 
     ax = plt.gca()
+    ax.figure.set_size_inches((12, 12))
     minor_ticks_x = np.arange(0.5, simdata.sim_size[0] - 0.5, 1)
     minor_ticks_y = np.arange(0.5, simdata.sim_size[1] - 0.5, 1)
     ax.set_xticks(minor_ticks_x, minor=True)
