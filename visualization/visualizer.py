@@ -4,12 +4,14 @@ from matplotlib.animation import FuncAnimation
 from dataparser import *
 from matplotlib.colors import ListedColormap
 import numpy as np
+import math
 
 simdata = data_parser("../data/output.txt")
 
 if simdata.sim_type == "3D":
-    def get_xyz(mat):
-        x, y, z = [], [], []
+    def get_xyz(mat,sim_size):
+        sim_center = tuple(map(lambda x:x/2,sim_size))
+        x, y, z, dists = [], [], [], []
         for i in range(len(mat)):
             for j in range(len(mat[i])):
                 for k in range(len(mat[i])):
@@ -17,20 +19,22 @@ if simdata.sim_type == "3D":
                         x.append(i)
                         y.append(j)
                         z.append(k)
-        return x, y, z
-
+                        dists.append(math.dist(sim_center,(i,j,k)))
+        return x, y, z, dists
+    
     ax = plt.gca(projection='3d')
-    x, y, z = get_xyz(simdata.frames[0].mat)
-    scat = plt.scatter(x, y, z)
-
+    ax.figure.set_size_inches((12, 12))
+    ax.set(xlim=(0,simdata.sim_size[0]),ylim=(0,simdata.sim_size[1]),zlim=(0,simdata.sim_size[2]))
+    x, y, z, dists = get_xyz(simdata.frames[0].mat,simdata.sim_size)
+    scat = ax.scatter(x, y, z)
     def update_func3d(frame, *fargs):
         global scat
-        x, y, z = get_xyz(frame.mat)
+        x, y, z,dists = get_xyz(frame.mat,fargs)
         scat.remove()
-        scat = plt.scatter(x, y, z)
+        scat = ax.scatter(x, y, z,c=dists)
         return scat
         
-    ani = FuncAnimation(plt.gcf(), update_func3d,frames=simdata.frames, interval=500, repeat=True, repeat_delay=500, save_count=len(simdata.frames))
+    ani = FuncAnimation(ax.figure, update_func3d,frames=simdata.frames, interval=500, repeat=True, repeat_delay=500, save_count=len(simdata.frames), fargs=simdata.sim_size)
     
     plt.show()
 else:
