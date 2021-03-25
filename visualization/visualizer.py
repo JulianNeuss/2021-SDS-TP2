@@ -29,6 +29,8 @@ if simdata.sim_type == "3D":
     scat = ax.scatter(x, y, z)
     def update_func3d(frame, *fargs):
         global scat
+        global ax
+        ax.set_title("Time:{}".format(frame.time),fontdict={'fontsize':20})
         x, y, z,dists = get_xyz(frame.mat,fargs)
         scat.remove()
         scat = ax.scatter(x, y, z,c=dists)
