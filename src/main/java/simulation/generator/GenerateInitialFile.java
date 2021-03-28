@@ -14,13 +14,13 @@ import java.util.Properties;
 
 public class GenerateInitialFile {
     private static final String DEFAULT_INPUT_FILENAME = "./data/initialSetup.txt";
-    private static final int DEFAULT_ROWS = 20;
-    private static final int DEFAULT_COLUMNS = 20;
-    private static final int DEFAULT_DEPTHS = 20;
-    private static final int DEFAULT_INITIAL_ROWS = 10;
-    private static final int DEFAULT_INITIAL_COLUMNS = 10;
-    private static final int DEFAULT_INITIAL_DEPTH = 10;
-    private static final double DEFAULT_PERCENTAGE_ALIVE = 0.25;
+    private static final int DEFAULT_ROWS = 60;
+    private static final int DEFAULT_COLUMNS = 60;
+    private static final int DEFAULT_DEPTHS = 60;
+    private static final int DEFAULT_INITIAL_ROWS = 20;
+    private static final int DEFAULT_INITIAL_COLUMNS = 20;
+    private static final int DEFAULT_INITIAL_DEPTH = 20;
+    private static final double DEFAULT_PERCENTAGE_ALIVE = 0.75;
     private static final Dimension DEFAULT_DIMENSION = Dimension.TWO_D;
 
 

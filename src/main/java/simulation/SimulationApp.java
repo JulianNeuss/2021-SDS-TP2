@@ -5,14 +5,16 @@ import simulation.parser.ParserResult;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SimulationApp {
     private static final String DEFAULT_INPUT_FILENAME = "./data/initialSetup.txt";
     private static final String DEFAULT_OUTPUT_FILENAME = "./data/output.txt";
     private static final int DEFAULT_ITERATIONS = 100;
     private static final boolean END_ON_TOUCH_BORDER = true;
+    private static final Set<Integer> DEFAULT_AROUND_ALIVE = new HashSet<>(Arrays.asList(2,3));
+    private static final Set<Integer> DEFAULT_AROUND_DEAD = new HashSet<>(Collections.singletonList(3));
 
     public static void main(String[] args) {
         Properties properties = System.getProperties();
@@ -29,12 +31,22 @@ public class SimulationApp {
 
         int maxIterations = DEFAULT_ITERATIONS;
         if( properties.getProperty("maxIterations")!= null ){
-            outputFilename = properties.getProperty("maxIterations");
+            maxIterations = Integer.parseInt(properties.getProperty("maxIterations"));
         }
 
         boolean endOnTouchBorder = END_ON_TOUCH_BORDER;
         if( properties.getProperty("endOnTouchBorder")!= null ){
             endOnTouchBorder = Boolean.parseBoolean(properties.getProperty("endOnTouchBorder"));
+        }
+
+        Set<Integer> aroundAliveSet = DEFAULT_AROUND_ALIVE;
+        if( properties.getProperty("aroundAlive")!= null ){
+            aroundAliveSet = Arrays.stream(properties.getProperty("aroundAlive").split(",")).map(Integer::parseInt).collect(Collectors.toSet());
+        }
+
+        Set<Integer> aroundDeadSet = DEFAULT_AROUND_DEAD;
+        if( properties.getProperty("aroundDead")!= null ){
+            aroundDeadSet = Arrays.stream(properties.getProperty("aroundDead").split(",")).map(Integer::parseInt).collect(Collectors.toSet());
         }
 
         // check input file
@@ -65,7 +77,6 @@ public class SimulationApp {
                 List<List<Cell>> cells = parserResult.getCells2D();
                 boolean touchBorder = false;
                 for (int iteration = 0; (endOnTouchBorder && !touchBorder && (iteration < maxIterations)) || (!endOnTouchBorder && iteration < maxIterations); iteration++) {
-                    cells = GameOfLife2D.nextRound(cells);
                     touchBorder = MatrixOperations.touchBorder2D(cells);
                     str.append(MatrixOperations.aliveQty2D(cells)).append(' ').append(MatrixOperations.maxDistance2D(cells)).append('\n');
                     str.append('\n');
@@ -76,6 +87,7 @@ public class SimulationApp {
                         str.append('\n');
                     }
                     str.append('\n');
+                    cells = GameOfLife2D.nextRound(cells, new GameOfLifeRules(aroundAliveSet, aroundDeadSet));
                 }
             } else {
                 str.append(Dimension.THREE_D.toString()).append('\n');
@@ -84,7 +96,6 @@ public class SimulationApp {
                 List<List<List<Cell>>> cells = parserResult.getCells3D();
                 boolean touchBorder = false;
                 for (int iteration = 0; (endOnTouchBorder && !touchBorder && (iteration < maxIterations)) || (!endOnTouchBorder && iteration < maxIterations); iteration++) {
-                    cells = GameOfLife3D.nextRound(cells);
                     touchBorder = MatrixOperations.touchBorder3D(cells);
                     str.append(MatrixOperations.aliveQty3D(cells)).append(' ').append(MatrixOperations.maxDistance3D(cells)).append('\n');
                     str.append('\n');
@@ -98,6 +109,7 @@ public class SimulationApp {
                         str.append('\n');
                     }
                     str.append('\n');
+                    cells = GameOfLife3D.nextRound(cells, new GameOfLifeRules(aroundAliveSet, aroundDeadSet));
                 }
             }
 

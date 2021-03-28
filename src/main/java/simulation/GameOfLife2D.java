@@ -2,12 +2,13 @@ package simulation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class GameOfLife2D {
     private GameOfLife2D(){
     }
 
-    public static List<List<Cell>> nextRound(List<List<Cell>> oldCellMatrix){
+    public static List<List<Cell>> nextRound(List<List<Cell>> oldCellMatrix, GameOfLifeRules rules){
         if(oldCellMatrix.isEmpty())
             throw new IllegalArgumentException("La matriz no tiene celdas");
 
@@ -19,7 +20,7 @@ public class GameOfLife2D {
                 int aliveAroundQty = aliveAroundQty(oldCellMatrix, row, column);
                 boolean wasAlive = oldCellMatrix.get(row).get(column).isAlive();
 
-                newCellMatrix.get(row).add(new Cell(shouldBeAlive(wasAlive, aliveAroundQty)));
+                newCellMatrix.get(row).add(new Cell(shouldBeAlive(wasAlive, aliveAroundQty, rules)));
             }
         }
 
@@ -34,11 +35,11 @@ public class GameOfLife2D {
         return matrix;
     }
 
-    private static boolean shouldBeAlive(boolean wasAlive, int aliveAroundQty) {
+    private static boolean shouldBeAlive(boolean wasAlive, int aliveAroundQty, GameOfLifeRules rules) {
         if(wasAlive){
-            return aliveAroundQty == 2 || aliveAroundQty == 3;
+            return rules.getAroundAliveSet().contains(aliveAroundQty);
         } else {
-            return aliveAroundQty == 3;
+            return rules.getAroundDeadSet().contains(aliveAroundQty);
         }
     }
 

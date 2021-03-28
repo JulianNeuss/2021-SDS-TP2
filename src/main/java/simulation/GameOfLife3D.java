@@ -7,7 +7,7 @@ public class GameOfLife3D {
     private GameOfLife3D(){
     }
 
-    public static List<List<List<Cell>>> nextRound(List<List<List<Cell>>> oldCellMatrix){
+    public static List<List<List<Cell>>> nextRound(List<List<List<Cell>>> oldCellMatrix, GameOfLifeRules rules){
         if(oldCellMatrix.isEmpty() || oldCellMatrix.get(0).isEmpty())
             throw new IllegalArgumentException("La matriz no tiene celdas");
 
@@ -22,7 +22,7 @@ public class GameOfLife3D {
                     int aliveAroundQty = aliveAroundQty(oldCellMatrix, row, column, depth);
                     boolean wasAlive = oldCellMatrix.get(row).get(column).get(depth).isAlive();
 
-                    newCellMatrix.get(row).get(column).add(new Cell(shouldBeAlive(wasAlive, aliveAroundQty)));
+                    newCellMatrix.get(row).get(column).add(new Cell(shouldBeAlive(wasAlive, aliveAroundQty, rules)));
                 }
             }
         }
@@ -41,11 +41,11 @@ public class GameOfLife3D {
         return matrix;
     }
 
-    private static boolean shouldBeAlive(boolean wasAlive, int aliveAroundQty) {
+    private static boolean shouldBeAlive(boolean wasAlive, int aliveAroundQty, GameOfLifeRules rules) {
         if(wasAlive){
-            return aliveAroundQty == 2 || aliveAroundQty == 3;
+            return rules.getAroundAliveSet().contains(aliveAroundQty);
         } else {
-            return aliveAroundQty == 3;
+            return rules.getAroundDeadSet().contains(aliveAroundQty);
         }
     }
 

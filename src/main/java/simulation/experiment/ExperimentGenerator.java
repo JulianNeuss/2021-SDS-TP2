@@ -10,22 +10,25 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ExperimentGenerator {
     private static final String DEFAULT_OUTPUT_FILENAME = "./data/test.txt";
-    private static final int DEFAULT_ROWS = 100;
-    private static final int DEFAULT_COLUMNS = 100;
-    private static final int DEFAULT_DEPTHS = 100;
-    private static final int DEFAULT_INITIAL_ROWS = 5;
-    private static final int DEFAULT_INITIAL_COLUMNS = 5;
-    private static final int DEFAULT_INITIAL_DEPTH = 5;
+    private static final int DEFAULT_ROWS = 60;
+    private static final int DEFAULT_COLUMNS = 60;
+    private static final int DEFAULT_DEPTHS = 60;
+    private static final int DEFAULT_INITIAL_ROWS = 20;
+    private static final int DEFAULT_INITIAL_COLUMNS = 20;
+    private static final int DEFAULT_INITIAL_DEPTH = 20;
     private static final double DEFAULT_MIN_PERCENTAGE_ALIVE = 0;
     private static final double DEFAULT_MAX_PERCENTAGE_ALIVE = 1;
-    private static final int DEFAULT_PERCENTAGES_QTY = 6;
-    private static final Dimension DEFAULT_DIMENSION = Dimension.THREE_D;
+    private static final int DEFAULT_PERCENTAGES_QTY = 8;
+    private static final Dimension DEFAULT_DIMENSION = Dimension.TWO_D;
     private static final int DEFAULT_ITERATIONS = 100;
     private static final boolean END_ON_TOUCH_BORDER = true;
-    private static final int DEFAULT_NUMBER_OF_RUNS = 10;
+    private static final int DEFAULT_NUMBER_OF_RUNS = 100;
+    private static final Set<Integer> DEFAULT_AROUND_ALIVE = new HashSet<>(Arrays.asList(2,3));
+    private static final Set<Integer> DEFAULT_AROUND_DEAD = new HashSet<>(Collections.singletonList(3));
 
 
     public static void main(String[] args) {
@@ -92,25 +95,46 @@ public class ExperimentGenerator {
             numberOfRuns = Integer.parseInt(properties.getProperty("numberOfRuns"));
         }
 
+        Set<Integer> aroundAliveSet = DEFAULT_AROUND_ALIVE;
+        if( properties.getProperty("aroundAlive")!= null ){
+            aroundAliveSet = Arrays.stream(properties.getProperty("aroundAlive").split(",")).map(Integer::parseInt).collect(Collectors.toSet());
+        }
 
+        Set<Integer> aroundDeadSet = DEFAULT_AROUND_DEAD;
+        if( properties.getProperty("aroundDead")!= null ){
+            aroundDeadSet = Arrays.stream(properties.getProperty("aroundDead").split(",")).map(Integer::parseInt).collect(Collectors.toSet());
+        }
+
+        StringBuilder str = new StringBuilder();
+        str.append(dimension.toString()).append('\n');
+        str.append(rows).append(' ').append(columns);
+        if (dimension == Dimension.THREE_D){
+            str.append(' ').append(depths);
+        }
+        str.append('\n');
+        str.append(initialRows).append(' ').append(initialColumns);
+        if (dimension == Dimension.THREE_D){
+            str.append(' ').append(initialDepths);
+        }
+        str.append('\n').append('\n');
 
         Map<Double, Map<Integer, List<ExperimentResult>>> results = new HashMap<>();
         Map<Double, Map<Integer, ExperimentResult>> percentageToAverageResults = new HashMap<>();
         double percentageStep = (maxPercentageAlive - minPercentageAlive)/percentageQty;
-        double percentageAlive = minPercentageAlive;
+        double percentageAlive = percentageStep;
         if (dimension == Dimension.TWO_D) {
             for (int percentageIteration = 0; percentageIteration <= percentageQty; percentageAlive = Math.min(1, percentageAlive + percentageStep), percentageIteration++) {
                 for (int run = 0; run < numberOfRuns; run++) {
                     boolean touchBorder = false;
                     List<List<Cell>> cells = MatrixGenerator2D.generate(rows, columns, initialRows, initialColumns, percentageAlive);
                     for (int iteration = 0; (endOnTouchBorder && !touchBorder && (iteration < maxIterations)) || (!endOnTouchBorder && iteration < maxIterations); iteration++) {
-                        cells = GameOfLife2D.nextRound(cells);
                         touchBorder = MatrixOperations.touchBorder2D(cells);
                         if(!results.containsKey(percentageAlive))
                             results.put(percentageAlive, new HashMap<>());
                         if(!results.get(percentageAlive).containsKey(iteration))
                             results.get(percentageAlive).put(iteration, new ArrayList<>());
                         results.get(percentageAlive).get(iteration).add(new ExperimentResult(MatrixOperations.aliveQty2D(cells), MatrixOperations.maxDistance2D(cells)));
+                        cells = GameOfLife2D.nextRound(cells, new GameOfLifeRules(aroundAliveSet, aroundDeadSet));
                     }
                 }
                 for (Integer iteration : results.get(percentageAlive).keySet()) {
@@ -125,13 +149,13 @@ public class ExperimentGenerator {
                     boolean touchBorder = false;
                     List<List<List<Cell>>> cells = MatrixGenerator3D.generate(rows, columns, depths, initialRows, initialColumns, initialDepths, percentageAlive);
                     for (int iteration = 0; (endOnTouchBorder && !touchBorder && (iteration < maxIterations)) || (!endOnTouchBorder && iteration < maxIterations); iteration++) {
-                        cells = GameOfLife3D.nextRound(cells);
                         touchBorder = MatrixOperations.touchBorder3D(cells);
                         if(!results.containsKey(percentageAlive))
                             results.put(percentageAlive, new HashMap<>());
                         if(!results.get(percentageAlive).containsKey(iteration))
                             results.get(percentageAlive).put(iteration, new ArrayList<>());
                         results.get(percentageAlive).get(iteration).add(new ExperimentResult(MatrixOperations.aliveQty3D(cells), MatrixOperations.maxDistance3D(cells)));
+                        cells = GameOfLife3D.nextRound(cells, new GameOfLifeRules(aroundAliveSet, aroundDeadSet));
                     }
                 }
 
@@ -143,7 +167,6 @@ public class ExperimentGenerator {
             }
         }
 
-        StringBuilder str = new StringBuilder();
         List<Double> sortedPercentages = new ArrayList<>(percentageToAverageResults.keySet());
         Collections.sort(sortedPercentages);
         for (Double percentage : sortedPercentages){

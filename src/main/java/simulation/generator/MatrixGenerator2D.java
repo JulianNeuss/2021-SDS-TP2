@@ -20,12 +20,17 @@ public class MatrixGenerator2D {
         for (int row = 0; row < rows; row++) {
             cells.add(new ArrayList<>(columns));
             for (int column = 0; column < columns; column++) {
-                if(row < centerRow - Math.floor(initialRows/2.0) || row > centerRow + Math.ceil(initialRows/2.0) ||
-                        column < centerColumn - Math.floor(initialColumns/2.0) || column > centerColumn + Math.ceil(initialColumns/2.0)){
-                    cells.get(row).add(new Cell(false));
-                } else {
+
+                boolean isInsideInitialSquare = row >= centerRow - Math.floor(initialRows/2.0) &&
+                        row < centerRow + Math.ceil(initialRows/2.0) &&
+                        column >= centerColumn - Math.floor(initialColumns/2.0) &&
+                        column < centerColumn + Math.ceil(initialColumns/2.0);
+
+                if(isInsideInitialSquare){
                     boolean isAlive = Math.random() < percentageRatio;
                     cells.get(row).add(new Cell(isAlive));
+                } else {
+                    cells.get(row).add(new Cell(false));
                 }
             }
         }

@@ -23,13 +23,20 @@ public class MatrixGenerator3D {
             for (int column = 0; column < columns; column++) {
                 cells.get(row).add(new ArrayList<>(depths));
                 for (int depth = 0; depth < depths; depth++) {
-                    if(row < centerRow - Math.floor(initialRows/2.0) || row > centerRow + Math.ceil(initialRows/2.0) ||
-                            column < centerColumn - Math.floor(initialColumns/2.0) || column > centerColumn + Math.ceil(initialColumns/2.0) ||
-                            depth < centerDepth - Math.floor(initialDepths/2.0) || depth > centerDepth + Math.ceil(initialDepths/2.0)){
-                        cells.get(row).get(column).add(new Cell(false));
-                    } else {
+
+                    boolean isInsideInitialCube = row >= centerRow - Math.floor(initialRows/2.0) &&
+                            row < centerRow + Math.ceil(initialRows/2.0) &&
+                            column >= centerColumn - Math.floor(initialColumns/2.0) &&
+                            column < centerColumn + Math.ceil(initialColumns/2.0) &&
+                            depth >= centerDepth - Math.floor(initialDepths/2.0) &&
+                            depth < centerDepth + Math.ceil(initialDepths/2.0);
+
+
+                    if(isInsideInitialCube){
                         boolean isAlive = Math.random() < aliveRatio;
                         cells.get(row).get(column).add(new Cell(isAlive));
+                    } else {
+                        cells.get(row).get(column).add(new Cell(false));
                     }
                 }
             }
