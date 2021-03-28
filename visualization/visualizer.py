@@ -9,37 +9,24 @@ import math
 simdata = data_parser("../data/output.txt")
 
 if simdata.sim_type == "3D":
-    def get_xyz(space, sim_size):
-        sim_center = tuple(map(lambda total_size: total_size/2, sim_size))
-        x_coords, y_coords, z_coords, distances = [], [], [], []
-        for x_coord in range(len(space)):
-            for y_coord in range(len(space[x_coord])):
-                for z_coord in range(len(space[x_coord][y_coord])):
-                    if space[x_coord][y_coord][z_coord] == 1:
-                        x_coords.append(x_coord)
-                        y_coords.append(y_coord)
-                        z_coords.append(z_coord)
-                        distances.append(math.dist(sim_center, (x_coord, y_coord, z_coord)))
-        return x_coords, y_coords, z_coords, distances
-    
+    x,y,z = np.indices(map(lambda x:x+1,simdata.sim_size))
+
     ax = plt.gca(projection='3d')
     ax.figure.set_size_inches((12, 12))
-    ax.set(xlim=(0, simdata.sim_size[0]), ylim=(0, simdata.sim_size[1]), zlim=(0, simdata.sim_size[2]))
-    x, y, z, dists = get_xyz(simdata.frames[0].mat, simdata.sim_size)
     ax.set_title("Time:{}".format(simdata.frames[0].time), fontdict={'fontsize': 20})
-    scat = ax.scatter(x, y, z, c=dists)
-
+    vox = ax.voxels(x,y,z,np.array(simdata.frames[0].mat),facecolor="red",edgecolor="black")
     def update_func3d(frame, *fargs):
-        global scat
         global ax
+        global vox
+        global x,y,z
+        for k in vox:
+            vox[k].remove()
         ax.set_title("Time:{}, Alive cells:{}".format(frame.time,frame.alive_cells), fontdict={'fontsize': 20})
-        x_coords, y_coords, z_coords, distances = get_xyz(frame.mat, fargs)
-        scat.remove()
-        scat = ax.scatter(x_coords, y_coords, z_coords, c=distances)
-        return scat
+        vox = ax.voxels(x,y,z,np.array(frame.mat),facecolor="red",edgecolor="black")
+        return ax.figure
         
     ani = FuncAnimation(ax.figure, update_func3d, frames=simdata.frames, interval=500, repeat=True, repeat_delay=500,
-                        save_count=len(simdata.frames), fargs=simdata.sim_size)
+                        save_count=len(simdata.frames), fargs=simdata.sim_size, blit=False)
     
     plt.show()
 else:
