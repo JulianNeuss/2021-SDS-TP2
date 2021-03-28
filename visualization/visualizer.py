@@ -10,11 +10,12 @@ simdata = data_parser("../data/output.txt")
 
 if simdata.sim_type == "3D":
     x,y,z = np.indices(map(lambda x:x+1,simdata.sim_size))
+    colors = np.zeros((*simdata.sim_size,3)) 
 
     ax = plt.gca(projection='3d')
     ax.figure.set_size_inches((12, 12))
     ax.set_title("Time:{}".format(simdata.frames[0].time), fontdict={'fontsize': 20})
-    vox = ax.voxels(x,y,z,np.array(simdata.frames[0].mat),facecolor="red",edgecolor="black")
+    vox = ax.voxels(x,y,z,np.array(simdata.frames[0].mat),facecolors=colors,edgecolor="black")
     def update_func3d(frame, *fargs):
         global ax
         global vox
@@ -22,7 +23,7 @@ if simdata.sim_type == "3D":
         for k in vox:
             vox[k].remove()
         ax.set_title("Time:{}, Alive cells:{}".format(frame.time,frame.alive_cells), fontdict={'fontsize': 20})
-        vox = ax.voxels(x,y,z,np.array(frame.mat),facecolor="red",edgecolor="black")
+        vox = ax.voxels(x,y,z,np.array(frame.mat),facecolors=colors,edgecolor="black")
         return ax.figure
         
     ani = FuncAnimation(ax.figure, update_func3d, frames=simdata.frames, interval=500, repeat=True, repeat_delay=500,
