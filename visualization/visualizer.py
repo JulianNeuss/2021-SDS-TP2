@@ -26,12 +26,13 @@ if simdata.sim_type == "3D":
     ax.figure.set_size_inches((12, 12))
     ax.set(xlim=(0, simdata.sim_size[0]), ylim=(0, simdata.sim_size[1]), zlim=(0, simdata.sim_size[2]))
     x, y, z, dists = get_xyz(simdata.frames[0].mat, simdata.sim_size)
-    scat = ax.scatter(x, y, z)
+    ax.set_title("Time:{}".format(simdata.frames[0].time), fontdict={'fontsize': 20})
+    scat = ax.scatter(x, y, z, c=dists)
 
     def update_func3d(frame, *fargs):
         global scat
         global ax
-        ax.set_title("Time:{}".format(frame.time), fontdict={'fontsize': 20})
+        ax.set_title("Time:{}, Alive cells:{}".format(frame.time,frame.alive_cells), fontdict={'fontsize': 20})
         x_coords, y_coords, z_coords, distances = get_xyz(frame.mat, fargs)
         scat.remove()
         scat = ax.scatter(x_coords, y_coords, z_coords, c=distances)
@@ -48,7 +49,7 @@ else:
         global mat
         # TODO:check
         global ax
-        ax.set_title("Time:{}".format(frame.time), fontdict={'fontsize': 20})
+        ax.set_title("Time:{}, Alive cells:{}".format(frame.time,frame.alive_cells), fontdict={'fontsize': 20})
         mat.set_data(frame.mat)
         return mat
         

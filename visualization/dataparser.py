@@ -1,10 +1,11 @@
 class Frame:
-    def __init__(self,time=0,mat=[],distance_from_border = 0):
+    def __init__(self,time=0,mat=[],distance_from_border = 0,alive_cells=0):
         self.time = time
         self.mat = mat
         self.distance_from_border = distance_from_border
+        self.alive_cells = alive_cells
     def __repr__(self):
-        return "{{time:{}, mat:\n{}\n}}".format(self.time,self.mat)
+        return "{{time:{},alive cells:{}, mat:\n{}\n}}".format(self.time,self.alive_cells,self.mat)
 
 
 class SimulationData:
@@ -63,6 +64,7 @@ def data_parser(filepath):
     simdata.sim_type = f.readline().strip()
     simdata.sim_size = list(map(int, f.readline().strip().split(" ")))
     
+    time = 0
     finished = False
     while not finished:
         line = f.readline()
@@ -72,7 +74,8 @@ def data_parser(filepath):
             finished = True
             continue
         line = line.strip().split(" ")
-        frame = Frame(time=int(line[0]), distance_from_border=float(line[1]))
+        frame = Frame(time=time,alive_cells=int(line[0]), distance_from_border=float(line[1]))
+        time += 1
         line = f.readline()
         if simdata.sim_type == TYPE_3D:
             mat = parse3d(f, simdata)
