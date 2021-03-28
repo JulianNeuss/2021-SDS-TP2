@@ -5,16 +5,34 @@ from dataparser import *
 from matplotlib.colors import ListedColormap
 import numpy as np
 import math
+import matplotlib.colors as mptcolors
+from matplotlib import cm
 
 simdata = data_parser("../data/output.txt")
 
 if simdata.sim_type == "3D":
     x,y,z = np.indices(map(lambda x:x+1,simdata.sim_size))
-    colors = np.zeros((*simdata.sim_size,3)) 
+    MAX_DIST = math.dist((0,0,0),(simdata.sim_size[0]/2,simdata.sim_size[1]/2,simdata.sim_size[2]/2))
+    COLORMAPPER = cm.get_cmap('magma',simdata.sim_size[0])
+    colors = []
+    CENTER = (simdata.sim_size[0]/2,simdata.sim_size[1]/2,simdata.sim_size[2]/2)
+    for i in range(simdata.sim_size[0]):
+        colors.append([])
+        for j in range(simdata.sim_size[1]):
+            colors[i].append([])
+            for k in range(simdata.sim_size[2]):
+                colors[i][j].append(COLORMAPPER(
+                    math.dist(
+                        CENTER,
+                        (i,j,k)
+                    )/MAX_DIST
+                ))
+                
+    colors = np.array(colors)
 
     ax = plt.gca(projection='3d')
     ax.figure.set_size_inches((12, 12))
-    ax.set_title("Time:{}".format(simdata.frames[0].time), fontdict={'fontsize': 20})
+    ax.set_title("Time:{}, Alive cells:{}".format(simdata.frames[0].time,simdata.frames[0].alive_cells), fontdict={'fontsize': 20})
     vox = ax.voxels(x,y,z,np.array(simdata.frames[0].mat),facecolors=colors,edgecolor="black")
     def update_func3d(frame, *fargs):
         global ax
@@ -45,6 +63,7 @@ else:
                         save_count=len(simdata.frames))
 
     ax = plt.gca()
+    ax.set_title("Time:{}, Alive cells:{}".format(simdata.frames[0].time,simdata.frames[0].alive_cells), fontdict={'fontsize': 20})
     ax.figure.set_size_inches((12, 12))
     minor_ticks_x = np.arange(0.5, simdata.sim_size[0] - 0.5, 1)
     minor_ticks_y = np.arange(0.5, simdata.sim_size[1] - 0.5, 1)
