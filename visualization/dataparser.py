@@ -42,13 +42,14 @@ def parse2d(f,simdata):
             mat[i][j] = int(line[j])
     return mat
 
-def parse3d(f,simdata):
-    mat = [[[0 for x in range(simdata.sim_size[2])] for y in range(simdata.sim_size[1])] for z in range(simdata.sim_size[0])]
+
+def parse3d(f, simdata):
+    mat = [[[0 for x in range(simdata.sim_size[0])] for y in range(simdata.sim_size[1])] for z in range(simdata.sim_size[2])]
     for i in range(simdata.sim_size[0]):
         for j in range(simdata.sim_size[1]):
             line = f.readline().strip().split(" ")
             for k in range(simdata.sim_size[2]):
-                mat[i][j][k] = int(line[j])
+                mat[i][j][k] = int(line[k])
         f.readline()
     return mat
 
@@ -62,7 +63,7 @@ def data_parser(filepath):
     simdata.sim_type = f.readline().strip()
     simdata.sim_size = list(map(int, f.readline().strip().split(" ")))
     
-    finished=False
+    finished = False
     while not finished:
         line = f.readline()
         while line == "\n":
@@ -74,9 +75,9 @@ def data_parser(filepath):
         frame = Frame(time=int(line[0]), distance_from_border=float(line[1]))
         line = f.readline()
         if simdata.sim_type == TYPE_3D:
-            mat = parse3d(f,simdata)
+            mat = parse3d(f, simdata)
         else:
-            mat = parse2d(f,simdata)
+            mat = parse2d(f, simdata)
         frame.mat = mat
         simdata.add_frame(frame)
     return simdata

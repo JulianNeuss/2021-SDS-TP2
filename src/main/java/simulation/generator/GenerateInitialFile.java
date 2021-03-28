@@ -21,7 +21,7 @@ public class GenerateInitialFile {
     private static final int DEFAULT_INITIAL_COLUMNS = 20;
     private static final int DEFAULT_INITIAL_DEPTH = 20;
     private static final double DEFAULT_PERCENTAGE_ALIVE = 0.75;
-    private static final Dimension DEFAULT_DIMENSION = Dimension.TWO_D;
+        private static final Dimension DEFAULT_DIMENSION = Dimension.THREE_D;
 
 
     public static void main(String[] args) {

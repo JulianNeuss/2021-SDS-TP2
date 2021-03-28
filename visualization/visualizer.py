@@ -9,34 +9,36 @@ import math
 simdata = data_parser("../data/output.txt")
 
 if simdata.sim_type == "3D":
-    def get_xyz(mat,sim_size):
-        sim_center = tuple(map(lambda x:x/2,sim_size))
-        x, y, z, dists = [], [], [], []
-        for i in range(len(mat)):
-            for j in range(len(mat[i])):
-                for k in range(len(mat[i])):
-                    if mat[i][j][k] == 1:
-                        x.append(i)
-                        y.append(j)
-                        z.append(k)
-                        dists.append(math.dist(sim_center,(i,j,k)))
-        return x, y, z, dists
+    def get_xyz(space, sim_size):
+        sim_center = tuple(map(lambda total_size: total_size/2, sim_size))
+        x_coords, y_coords, z_coords, distances = [], [], [], []
+        for x_coord in range(len(space)):
+            for y_coord in range(len(space[x_coord])):
+                for z_coord in range(len(space[x_coord][y_coord])):
+                    if space[x_coord][y_coord][z_coord] == 1:
+                        x_coords.append(x_coord)
+                        y_coords.append(y_coord)
+                        z_coords.append(z_coord)
+                        distances.append(math.dist(sim_center, (x_coord, y_coord, z_coord)))
+        return x_coords, y_coords, z_coords, distances
     
     ax = plt.gca(projection='3d')
     ax.figure.set_size_inches((12, 12))
-    ax.set(xlim=(0,simdata.sim_size[0]),ylim=(0,simdata.sim_size[1]),zlim=(0,simdata.sim_size[2]))
-    x, y, z, dists = get_xyz(simdata.frames[0].mat,simdata.sim_size)
+    ax.set(xlim=(0, simdata.sim_size[0]), ylim=(0, simdata.sim_size[1]), zlim=(0, simdata.sim_size[2]))
+    x, y, z, dists = get_xyz(simdata.frames[0].mat, simdata.sim_size)
     scat = ax.scatter(x, y, z)
+
     def update_func3d(frame, *fargs):
         global scat
         global ax
-        ax.set_title("Time:{}".format(frame.time),fontdict={'fontsize':20})
-        x, y, z,dists = get_xyz(frame.mat,fargs)
+        ax.set_title("Time:{}".format(frame.time), fontdict={'fontsize': 20})
+        x_coords, y_coords, z_coords, distances = get_xyz(frame.mat, fargs)
         scat.remove()
-        scat = ax.scatter(x, y, z,c=dists)
+        scat = ax.scatter(x_coords, y_coords, z_coords, c=distances)
         return scat
         
-    ani = FuncAnimation(ax.figure, update_func3d,frames=simdata.frames, interval=500, repeat=True, repeat_delay=500, save_count=len(simdata.frames), fargs=simdata.sim_size)
+    ani = FuncAnimation(ax.figure, update_func3d, frames=simdata.frames, interval=500, repeat=True, repeat_delay=500,
+                        save_count=len(simdata.frames), fargs=simdata.sim_size)
     
     plt.show()
 else:
@@ -46,11 +48,12 @@ else:
         global mat
         # TODO:check
         global ax
-        ax.set_title("Time:{}".format(frame.time),fontdict={'fontsize':20})
+        ax.set_title("Time:{}".format(frame.time), fontdict={'fontsize': 20})
         mat.set_data(frame.mat)
         return mat
         
-    ani = FuncAnimation(plt.gcf(), update_func2d, frames=simdata.frames, interval=500, repeat=True, repeat_delay=500, save_count=len(simdata.frames))
+    ani = FuncAnimation(plt.gcf(), update_func2d, frames=simdata.frames, interval=500, repeat=True, repeat_delay=500,
+                        save_count=len(simdata.frames))
 
     ax = plt.gca()
     ax.figure.set_size_inches((12, 12))
