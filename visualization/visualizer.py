@@ -45,7 +45,7 @@ if simdata.sim_type == "3D":
         return ax.figure
         
     ani = FuncAnimation(ax.figure, update_func3d, frames=simdata.frames, interval=500, repeat=True, repeat_delay=500,
-                        save_count=len(simdata.frames), fargs=simdata.sim_size, blit=False)
+                        save_count=len(simdata.frames), fargs=simdata.sim_size)
     
     plt.show()
 else:
