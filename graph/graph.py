@@ -21,6 +21,7 @@ percentage_list = []
 f = open(FILE_PATH, 'r')
 line_number = 0
 dimension = f.readline().strip()
+rules = f.readline().strip().split(SEPARATOR)
 total_sizes = f.readline().strip().split(SEPARATOR)
 total_rows = int(total_sizes[0])
 total_columns = int(total_sizes[1])
@@ -51,16 +52,23 @@ for line in f.readlines():
         max_distance_list[len(percentage_list) - 1].append(float(iterationAnalytics[2]))
         line_number += 1
 
+outputs = []
+for i, percentage in enumerate(percentage_list):
+    accum = 0
+    for iteration, alive_qty in enumerate(alive_qty_list[i]):
+        accum += iteration * alive_qty
+    outputs.append(accum)
+
 
 plt.rcParams["figure.figsize"] = (10, 10)
 plt.rcParams.update({'font.size': 12})
 plt.figure()
 if(dimension == "2D"):
     plt.title("Celdas vivas a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
-              "{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, initial_rows, initial_columns, total_rows, total_columns))
+              "{} - Regla: {}/{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, total_rows, total_columns))
 else:
     plt.title("Celdas vivas a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
-              "{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
+              "{} - Regla: {}/{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
 plt.xlabel("Tiempo")
 plt.ylabel("Cantidad de celdas vivas")
 for i in range(0, len(alive_qty_list)):
@@ -72,10 +80,10 @@ plt.show(block=False)
 plt.figure()
 if(dimension == "2D"):
     plt.title("Distancia máxima del centro a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
-              "{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, initial_rows, initial_columns, total_rows, total_columns))
+              "{} - Regla: {}/{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, total_rows, total_columns))
 else:
     plt.title("Distancia máxima del centro a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
-              "{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
+              "{} - Regla: {}/{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
 
 plt.xlabel("Tiempo")
 plt.ylabel("Distancia máxima del centro")
@@ -83,4 +91,18 @@ for i in range(0, len(max_distance_list)):
     times = range(0, len(max_distance_list[i]))
     plt.plot(times, max_distance_list[i], label="{:.2f}%".format(percentage_list[i] * 100))
 plt.legend(loc='best')
+plt.show(block=False)
+
+plt.figure()
+if(dimension == "2D"):
+    plt.title("Output en función del input\n"
+              "{} - Regla: {}/{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, total_rows, total_columns))
+else:
+    plt.title("Output en función del input\n"
+              "{} - Regla: {}/{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
+
+plt.xlabel("Porcentaje inicial")
+plt.ylabel("Output")
+plt.bar(percentage_list, outputs, width=0.1)
+plt.xticks(percentage_list, [str(i*100) + "%" for i in percentage_list])
 plt.show()

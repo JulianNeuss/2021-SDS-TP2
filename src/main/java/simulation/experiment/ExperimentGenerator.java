@@ -107,6 +107,14 @@ public class ExperimentGenerator {
 
         StringBuilder str = new StringBuilder();
         str.append(dimension.toString()).append('\n');
+        for (Integer i : aroundAliveSet){
+            str.append(i);
+        }
+        str.append(' ');
+        for (Integer i : aroundDeadSet){
+            str.append(i);
+        }
+        str.append('\n');
         str.append(rows).append(' ').append(columns);
         if (dimension == Dimension.THREE_D){
             str.append(' ').append(depths);
