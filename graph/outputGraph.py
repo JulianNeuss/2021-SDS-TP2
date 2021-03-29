@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 FILE_PATH = '../data/test.txt'
-DIR = '../graph/testResults/selected/2D'
+DIR = '../graph/testResults/selected/3D'
 SEPARATOR = ' '
 TEST_TYPE_SEPARATOR = '\n'
 
@@ -84,7 +84,7 @@ for subdir, dirs, files in os.walk(DIR):
 percentage_labels = [str(i*100) + "%" for i in percentage_list]
 
 x = np.arange(len(percentage_labels))  # the label locations
-width = 0.1  # the width of the bars
+width = 0.25  # the width of the bars
 bars = []
 fig, ax = plt.subplots()
 for i in range(len(outputs)//2):
