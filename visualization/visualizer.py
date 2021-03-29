@@ -8,13 +8,33 @@ import math
 import matplotlib.colors as mptcolors
 from matplotlib import cm
 import os
+import argparse
 
 DATA_PATH = "../data/output.txt"
 ANIMATIONS_PATH = "animations"
-ANIMATIONS_GIF_PATH = "animation.gif"
-ANIMATIONS_AVI_PATH = "animation.avi"
+ANIMATIONS_FILENAME = "animation"
 save_video = True
 
+argp = argparse.ArgumentParser(description="Game of life visualizer")
+argp.add_argument('--output-file-path', dest='output_path', help='path to output of sim')
+argp.add_argument('--save-video', dest='save_video', help='save video:True or False')
+argp.add_argument('--animations-path', dest='animation_path', help='animations path')
+argp.add_argument('--filename', dest='filename', help='animations filename')
+
+args = argp.parse_args()
+
+if args.output_path:
+    DATA_PATH = args.output_path
+
+if args.save_video:
+    save_video = bool(args.save_video)
+
+if args.animation_path:
+    ANIMATIONS_PATH = args.animation_path
+
+if args.filename:
+    ANIMATIONS_FILENAME = args.filename
+    
 simdata = data_parser(DATA_PATH)
 
 if simdata.sim_type == "3D":
@@ -57,8 +77,8 @@ if simdata.sim_type == "3D":
     if save_video:
         if not os.path.exists(ANIMATIONS_PATH):
             os.makedirs(ANIMATIONS_PATH)
-        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_AVI_PATH))
-        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_GIF_PATH))
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".avi"))
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".gif"))
     plt.show()
 else:
     mat = plt.matshow(simdata.frames[0].mat, cmap=ListedColormap(['w', 'k']))
@@ -90,7 +110,7 @@ else:
     if save_video:
         if not os.path.exists(ANIMATIONS_PATH):
             os.makedirs(ANIMATIONS_PATH)
-        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_AVI_PATH))
-        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_GIF_PATH))
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".avi"))
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".gif"))
 
     plt.show()
