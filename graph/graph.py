@@ -61,7 +61,7 @@ if(dimension == "2D"):
 else:
     plt.title("Celdas vivas a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
               "{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
-plt.xlabel("Iteración")
+plt.xlabel("Tiempo")
 plt.ylabel("Cantidad de celdas vivas")
 for i in range(0, len(alive_qty_list)):
     times = range(0, len(alive_qty_list[i]))
@@ -77,7 +77,7 @@ else:
     plt.title("Distancia máxima del centro a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
               "{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
 
-plt.xlabel("Iteración")
+plt.xlabel("Tiempo")
 plt.ylabel("Distancia máxima del centro")
 for i in range(0, len(max_distance_list)):
     times = range(0, len(max_distance_list[i]))
