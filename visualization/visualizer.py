@@ -7,8 +7,15 @@ import numpy as np
 import math
 import matplotlib.colors as mptcolors
 from matplotlib import cm
+import os
 
-simdata = data_parser("../data/output.txt")
+DATA_PATH = "../data/output.txt"
+ANIMATIONS_PATH = "animations"
+ANIMATIONS_GIF_PATH = "animation.gif"
+ANIMATIONS_AVI_PATH = "animation.avi"
+save_video = True
+
+simdata = data_parser(DATA_PATH)
 
 if simdata.sim_type == "3D":
     x,y,z = np.indices(map(lambda x:x+1,simdata.sim_size))
@@ -47,6 +54,11 @@ if simdata.sim_type == "3D":
     ani = FuncAnimation(ax.figure, update_func3d, frames=simdata.frames, interval=500, repeat=True, repeat_delay=500,
                         save_count=len(simdata.frames), fargs=simdata.sim_size)
     
+    if save_video:
+        if not os.path.exists(ANIMATIONS_PATH):
+            os.makedirs(ANIMATIONS_PATH)
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_AVI_PATH))
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_GIF_PATH))
     plt.show()
 else:
     mat = plt.matshow(simdata.frames[0].mat, cmap=ListedColormap(['w', 'k']))
@@ -75,5 +87,10 @@ else:
         tic.tick1On = tic.tick2On = False
     for tic in ax.yaxis.get_major_ticks():
         tic.tick1On = tic.tick2On = False
+    if save_video:
+        if not os.path.exists(ANIMATIONS_PATH):
+            os.makedirs(ANIMATIONS_PATH)
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_AVI_PATH))
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_GIF_PATH))
 
     plt.show()
