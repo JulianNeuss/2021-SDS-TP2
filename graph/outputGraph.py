@@ -18,7 +18,9 @@ class TestResult:
 
 rules = []
 alive_quantities_list = []
+alive_stds_list = []
 max_distances_list = []
+max_distances_stds_list = []
 percentage_list = []
 outputs = []
 dimension = 0
@@ -35,7 +37,9 @@ for subdir, dirs, files in os.walk(DIR):
         filepath = subdir + os.sep + file
 
         alive_qty_list = []
+        alive_std_list = []
         max_distance_list = []
+        max_distance_std_list = []
         f = open(filepath, 'r')
         line_number = 0
         dimension = f.readline().strip()
@@ -60,14 +64,20 @@ for subdir, dirs, files in os.walk(DIR):
             elif line_number == 1:
                 iterationAnalytics = line.split(SEPARATOR)
                 alive_qty_list.append([])
+                alive_std_list.append([])
                 max_distance_list.append([])
+                max_distance_std_list.append([])
                 alive_qty_list[len(alive_qty_list) - 1].append(float(iterationAnalytics[1]))
-                max_distance_list[len(max_distance_list) - 1].append(float(iterationAnalytics[2]))
+                alive_std_list[len(alive_std_list) - 1].append(float(iterationAnalytics[2]))
+                max_distance_list[len(max_distance_list) - 1].append(float(iterationAnalytics[3]))
+                max_distance_std_list[len(max_distance_std_list) - 1].append(float(iterationAnalytics[4]))
                 line_number += 1
             else:
                 iterationAnalytics = line.split(SEPARATOR)
                 alive_qty_list[len(alive_qty_list) - 1].append(float(iterationAnalytics[1]))
-                max_distance_list[len(max_distance_list) - 1].append(float(iterationAnalytics[2]))
+                alive_std_list[len(alive_std_list) - 1].append(float(iterationAnalytics[2]))
+                max_distance_list[len(max_distance_list) - 1].append(float(iterationAnalytics[3]))
+                max_distance_std_list[len(max_distance_std_list) - 1].append(float(iterationAnalytics[4]))
                 line_number += 1
 
         output = []
@@ -76,25 +86,35 @@ for subdir, dirs, files in os.walk(DIR):
             for iteration, alive_qty in enumerate(alive_qty_list[i]):
                 accum += iteration * alive_qty
             output.append(accum)
+
         rules.append(rule)
         alive_quantities_list.append(alive_qty_list)
+        alive_stds_list.append(alive_std_list)
         max_distances_list.append(max_distance_list)
+        max_distances_stds_list.append(max_distance_std_list)
         outputs.append(output)
 
 percentage_labels = [str(i*100) + "%" for i in percentage_list]
+errors = []
+for stds_list in alive_stds_list:
+    errors.append([])
+    for i in range(len(percentage_list)):
+        accum = 0
+        for iteration, std in enumerate(stds_list[i]):
+            accum += (iteration * std) ** 2
+        errors[len(errors)-1].append(np.sqrt(accum))
 
 x = np.arange(len(percentage_labels))  # the label locations
 width = 0.25  # the width of the bars
 bars = []
 fig, ax = plt.subplots()
 for i in range(len(outputs)//2):
-    bars.append(ax.bar(x - (i+1)*width, outputs[i], width, log=False, label='{}/{}'.format(rules[i][0], rules[i][1])))
+    bars.append(ax.bar(x - (i+1)*width, outputs[i], width, log=False, label='{}/{}'.format(rules[i][0], rules[i][1]), yerr=errors[i]))
 
 if len(outputs) % 2 != 0:
-    bars.append(ax.bar(x, outputs[len(outputs)//2], width, log=False, label='{}/{}'.format(rules[len(outputs)//2][0],
-                                                                              rules[len(outputs)//2][1])))
+    bars.append(ax.bar(x, outputs[len(outputs)//2], width, log=False, label='{}/{}'.format(rules[len(outputs)//2][0], rules[len(outputs)//2][1]), yerr=errors[len(outputs)//2]))
 for i in range(len(outputs)//2 + 1, len(outputs)):
-    bars.append(ax.bar(x + (i-len(outputs)//2)*width, outputs[i], width, log=False, label='{}/{}'.format(rules[i][0], rules[i][1])))
+    bars.append(ax.bar(x + (i-len(outputs)//2)*width, outputs[i], width, log=False, label='{}/{}'.format(rules[i][0], rules[i][1]), yerr=errors[i]))
 
 # Add some text for labels, title and custom x-axis tick labels, etc.
 ax.set_ylabel('Output')
@@ -116,7 +136,7 @@ for i in outputs:
 
 for rect, label in zip(rects, labels):
     height = rect.get_height()
-    ax.text(rect.get_x() + rect.get_width() / 2, height + 5, label, ha='center', va='bottom')
+    ax.text(rect.get_x() + rect.get_width() / 2, height + 500, label, ha='center', va='bottom')
 
 ax.legend()
 fig.tight_layout()

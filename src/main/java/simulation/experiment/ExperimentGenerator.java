@@ -23,12 +23,12 @@ public class ExperimentGenerator {
     private static final double DEFAULT_MIN_PERCENTAGE_ALIVE = 0;
     private static final double DEFAULT_MAX_PERCENTAGE_ALIVE = 1;
     private static final int DEFAULT_PERCENTAGES_QTY = 8;
-    private static final Dimension DEFAULT_DIMENSION = Dimension.TWO_D;
+    private static final Dimension DEFAULT_DIMENSION = Dimension.THREE_D;
     private static final int DEFAULT_ITERATIONS = 100;
     private static final boolean END_ON_TOUCH_BORDER = true;
     private static final int DEFAULT_NUMBER_OF_RUNS = 100;
-    private static final Set<Integer> DEFAULT_AROUND_ALIVE = new HashSet<>(Arrays.asList(2,3));
-    private static final Set<Integer> DEFAULT_AROUND_DEAD = new HashSet<>(Collections.singletonList(3));
+    private static final Set<Integer> DEFAULT_AROUND_ALIVE = new HashSet<>(Arrays.asList(5, 6, 7));
+    private static final Set<Integer> DEFAULT_AROUND_DEAD = new HashSet<>(Arrays.asList(6));
 
 
     public static void main(String[] args) {
@@ -141,7 +141,7 @@ public class ExperimentGenerator {
                             results.put(percentageAlive, new HashMap<>());
                         if(!results.get(percentageAlive).containsKey(iteration))
                             results.get(percentageAlive).put(iteration, new ArrayList<>());
-                        results.get(percentageAlive).get(iteration).add(new ExperimentResult(MatrixOperations.aliveQty2D(cells), MatrixOperations.maxDistance2D(cells)));
+                        results.get(percentageAlive).get(iteration).add(new ExperimentResult(MatrixOperations.aliveQty2D(cells), MatrixOperations.maxDistance2D(cells), 0, 0));
                         cells = GameOfLife2D.nextRound(cells, new GameOfLifeRules(aroundAliveSet, aroundDeadSet));
                     }
                 }
@@ -162,7 +162,7 @@ public class ExperimentGenerator {
                             results.put(percentageAlive, new HashMap<>());
                         if(!results.get(percentageAlive).containsKey(iteration))
                             results.get(percentageAlive).put(iteration, new ArrayList<>());
-                        results.get(percentageAlive).get(iteration).add(new ExperimentResult(MatrixOperations.aliveQty3D(cells), MatrixOperations.maxDistance3D(cells)));
+                        results.get(percentageAlive).get(iteration).add(new ExperimentResult(MatrixOperations.aliveQty3D(cells), MatrixOperations.maxDistance3D(cells),0 ,0));
                         cells = GameOfLife3D.nextRound(cells, new GameOfLifeRules(aroundAliveSet, aroundDeadSet));
                     }
                 }
@@ -182,7 +182,9 @@ public class ExperimentGenerator {
             List<Integer> sortedIterations = new ArrayList<>(percentageToAverageResults.get(percentage).keySet());
             Collections.sort(sortedIterations);
             for (Integer iteration : sortedIterations) {
-                str.append(iteration).append(' ').append(percentageToAverageResults.get(percentage).get(iteration).aliveQty).append(' ').append(percentageToAverageResults.get(percentage).get(iteration).maxDistance).append('\n');
+                ExperimentResult result = percentageToAverageResults.get(percentage).get(iteration);
+                str.append(iteration).append(' ').append(result.aliveQty).append(' ').append(result.aliveStandardDeviation).append(' ')
+                        .append(result.maxDistance).append(' ').append(result.distanceStandardDeviation).append('\n');
             }
             str.append('\n');
         }
@@ -209,20 +211,35 @@ public class ExperimentGenerator {
     private static ExperimentResult averageResult(List<ExperimentResult> experimentResults) {
         double aliveSum = 0;
         double distanceSum = 0;
+        double aliveStandardDeviationAccum = 0;
+        double distanceStandardDeviationAccum = 0;
         for (ExperimentResult result : experimentResults){
             aliveSum += result.aliveQty;
             distanceSum += result.maxDistance;
         }
-        return new ExperimentResult(aliveSum/experimentResults.size(), distanceSum/experimentResults.size());
+
+        double aliveMean = aliveSum/experimentResults.size();
+        double maxDistanceMean = distanceSum/experimentResults.size();
+        for (ExperimentResult result : experimentResults){
+            aliveStandardDeviationAccum += Math.pow(result.aliveQty - aliveMean, 2);
+            distanceStandardDeviationAccum += Math.pow(result.maxDistance - maxDistanceMean, 2);
+        }
+
+
+        return new ExperimentResult(aliveMean, maxDistanceMean, Math.sqrt(aliveStandardDeviationAccum/experimentResults.size()), Math.sqrt(distanceStandardDeviationAccum/experimentResults.size()));
     }
 
     private static class ExperimentResult {
         private final double aliveQty;
         private final double maxDistance;
+        private final double aliveStandardDeviation;
+        private final double distanceStandardDeviation;
 
-        public ExperimentResult(double aliveQty, double maxDistance) {
+        public ExperimentResult(double aliveQty, double maxDistance, double aliveStandardDeviation, double distanceStandardDeviation) {
             this.aliveQty = aliveQty;
             this.maxDistance = maxDistance;
+            this.aliveStandardDeviation = aliveStandardDeviation;
+            this.distanceStandardDeviation = distanceStandardDeviation;
         }
     }
 }
