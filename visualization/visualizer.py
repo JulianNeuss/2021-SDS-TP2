@@ -34,8 +34,15 @@ if args.animation_path:
 
 if args.filename:
     ANIMATIONS_FILENAME = args.filename
-    
+
+print("Parsing data")
 simdata = data_parser(DATA_PATH)
+print("Data parsed")
+
+def print_progress_helper(frame,total,save_type):
+    aux = round(total/20)
+    if frame%aux == 0:
+        print("Progress saving {} file: {} of {} frames ({}%)".format(save_type,frame,total,math.floor((frame/total) * 100)))
 
 if simdata.sim_type == "3D":
     x,y,z = np.indices(map(lambda x:x+1,simdata.sim_size))
@@ -43,6 +50,7 @@ if simdata.sim_type == "3D":
     COLORMAPPER = cm.get_cmap('magma',simdata.sim_size[0])
     colors = []
     CENTER = (simdata.sim_size[0]/2,simdata.sim_size[1]/2,simdata.sim_size[2]/2)
+    print("Calculating color grid")
     for i in range(simdata.sim_size[0]):
         colors.append([])
         for j in range(simdata.sim_size[1]):
@@ -54,7 +62,7 @@ if simdata.sim_type == "3D":
                         (i,j,k)
                     )/MAX_DIST
                 ))
-                
+    print("Color grid calculated")
     colors = np.array(colors)
 
     ax = plt.gca(projection='3d')
@@ -77,8 +85,10 @@ if simdata.sim_type == "3D":
     if save_video:
         if not os.path.exists(ANIMATIONS_PATH):
             os.makedirs(ANIMATIONS_PATH)
-        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".avi"))
-        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".gif"))
+        print("Saving videos")
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".avi"),progress_callback=lambda f,t:print_progress_helper(f,t,"avi"))
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".gif"),progress_callback=lambda f,t:print_progress_helper(f,t,"gif"))
+        print("Videos saved")
     plt.show()
 else:
     mat = plt.matshow(simdata.frames[0].mat, cmap=ListedColormap(['w', 'k']))
@@ -110,7 +120,8 @@ else:
     if save_video:
         if not os.path.exists(ANIMATIONS_PATH):
             os.makedirs(ANIMATIONS_PATH)
-        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".avi"))
-        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".gif"))
-
+        print("Saving videos")
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".avi"),progress_callback=lambda f,t:print_progress_helper(f,t,"avi"))
+        ani.save(os.path.join(ANIMATIONS_PATH,ANIMATIONS_FILENAME + ".gif"),progress_callback=lambda f,t:print_progress_helper(f,t,"gif"))
+        print("Videos saved")
     plt.show()
