@@ -117,7 +117,7 @@ for i in range(len(outputs)//2 + 1, len(outputs)):
     bars.append(ax.bar(x + (i-len(outputs)//2)*width, outputs[i], width, log=False, label='{}/{}'.format(rules[i][0], rules[i][1]), yerr=errors[i]))
 
 # Add some text for labels, title and custom x-axis tick labels, etc.
-ax.set_ylabel('Output')
+ax.set_ylabel('Output (1e2)')
 ax.set_xlabel('Porcentaje inicial')
 if(dimension == "2D"):
     plt.title("Output en función del input\n"
@@ -127,18 +127,26 @@ else:
               "{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
 ax.set_xticks(x)
 ax.set_xticklabels(percentage_labels)
+yticks = range(0, 10000001, 10000000//5)
+ax.set_yticks(yticks)
+output_labels = [int(i//(10**2)) for i in yticks]
+ax.set_yticklabels(output_labels)
 
 rects = ax.patches
 labels = []
 for i in outputs:
     for j in i:
-        labels.append(int(j))
+        labels.append("{}".format(int(j//(10**2))))
 
 for rect, label in zip(rects, labels):
     height = rect.get_height()
-    ax.text(rect.get_x() + rect.get_width() / 2, height + 500, label, ha='center', va='bottom')
+    ax.text(rect.get_x() + rect.get_width() / 2, height + 5, label, ha='center', va='bottom')
 
-ax.legend()
-fig.tight_layout()
+# Shrink current axis by 20%
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+# Put a legend to the right of the current axis
+ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 plt.show()
