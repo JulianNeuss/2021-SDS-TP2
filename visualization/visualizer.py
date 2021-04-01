@@ -46,7 +46,7 @@ def print_progress_helper(frame,total,save_type):
 if simdata.sim_type == "3D":
     x,y,z = np.indices(map(lambda x:x+1,simdata.sim_size))
     MAX_DIST = math.dist((0,0,0),(simdata.sim_size[0]/2,simdata.sim_size[1]/2,simdata.sim_size[2]/2))
-    COLORMAPPER = cm.get_cmap('magma',simdata.sim_size[0])
+    COLORMAPPER = cm.get_cmap('nipy_spectral',simdata.sim_size[0])
     colors = []
     CENTER = (simdata.sim_size[0]/2,simdata.sim_size[1]/2,simdata.sim_size[2]/2)
     print("Calculating color grid")
