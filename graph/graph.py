@@ -15,13 +15,15 @@ class TestResult:
         return "{{alive_qty:{},max_distance:{}}}".format(self.alive_qty, self.max_distance)
 
 
+rules = []
 alive_qty_list = []
+alive_std_list = []
 max_distance_list = []
-percentage_list = []
+max_distance_std_list = []
 f = open(FILE_PATH, 'r')
 line_number = 0
 dimension = f.readline().strip()
-rules = f.readline().strip().split(SEPARATOR)
+rule = f.readline().strip().split(SEPARATOR)
 total_sizes = f.readline().strip().split(SEPARATOR)
 total_rows = int(total_sizes[0])
 total_columns = int(total_sizes[1])
@@ -32,7 +34,7 @@ initial_rows = int(initial_sizes[0])
 initial_columns = int(initial_sizes[1])
 if dimension == "3D":
     initial_depths = int(initial_sizes[2])
-
+percentage_list = []
 for line in f.readlines():
     if line == "\n":
         line_number = 0
@@ -42,67 +44,51 @@ for line in f.readlines():
     elif line_number == 1:
         iterationAnalytics = line.split(SEPARATOR)
         alive_qty_list.append([])
+        alive_std_list.append([])
         max_distance_list.append([])
-        alive_qty_list[len(percentage_list) - 1].append(float(iterationAnalytics[1]))
-        max_distance_list[len(percentage_list) - 1].append(float(iterationAnalytics[2]))
+        max_distance_std_list.append([])
+        alive_qty_list[len(alive_qty_list) - 1].append(float(iterationAnalytics[1]))
+        alive_std_list[len(alive_std_list) - 1].append(float(iterationAnalytics[2]))
+        max_distance_list[len(max_distance_list) - 1].append(float(iterationAnalytics[3]))
+        max_distance_std_list[len(max_distance_std_list) - 1].append(float(iterationAnalytics[4]))
         line_number += 1
     else:
         iterationAnalytics = line.split(SEPARATOR)
-        alive_qty_list[len(percentage_list) - 1].append(float(iterationAnalytics[1]))
-        max_distance_list[len(percentage_list) - 1].append(float(iterationAnalytics[2]))
+        alive_qty_list[len(alive_qty_list) - 1].append(float(iterationAnalytics[1]))
+        alive_std_list[len(alive_std_list) - 1].append(float(iterationAnalytics[2]))
+        max_distance_list[len(max_distance_list) - 1].append(float(iterationAnalytics[3]))
+        max_distance_std_list[len(max_distance_std_list) - 1].append(float(iterationAnalytics[4]))
         line_number += 1
-
-outputs = []
-for i, percentage in enumerate(percentage_list):
-    accum = 0
-    for iteration, alive_qty in enumerate(alive_qty_list[i]):
-        accum += iteration * alive_qty
-    outputs.append(accum)
-
 
 plt.rcParams["figure.figsize"] = (10, 10)
 plt.rcParams.update({'font.size': 12})
 plt.figure()
 if(dimension == "2D"):
     plt.title("Celdas vivas a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
-              "{} - Regla: {}/{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, total_rows, total_columns))
+              "{} - Regla: {}/{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, rule[0], rule[1], initial_rows, initial_columns, total_rows, total_columns))
 else:
     plt.title("Celdas vivas a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
-              "{} - Regla: {}/{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
+              "{} - Regla: {}/{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, rule[0], rule[1], initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
 plt.xlabel("Tiempo")
 plt.ylabel("Cantidad de celdas vivas")
 for i in range(0, len(alive_qty_list)):
     times = range(0, len(alive_qty_list[i]))
-    plt.plot(times, alive_qty_list[i], label="{:.2f}%".format(percentage_list[i] * 100))
+    plt.errorbar(times, alive_qty_list[i], yerr=alive_std_list[i], label="{:.2f}%".format(percentage_list[i] * 100))
 plt.legend(loc='best')
 plt.show(block=False)
 
 plt.figure()
 if(dimension == "2D"):
     plt.title("Distancia máxima del centro a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
-              "{} - Regla: {}/{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, total_rows, total_columns))
+              "{} - Regla: {}/{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, rule[0], rule[1], initial_rows, initial_columns, total_rows, total_columns))
 else:
     plt.title("Distancia máxima del centro a lo largo del tiempo según el porcentaje de celdas vivas en la condicion inicial\n"
-              "{} - Regla: {}/{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
+              "{} - Regla: {}/{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, rule[0], rule[1], initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
 
 plt.xlabel("Tiempo")
 plt.ylabel("Distancia máxima del centro")
 for i in range(0, len(max_distance_list)):
     times = range(0, len(max_distance_list[i]))
-    plt.plot(times, max_distance_list[i], label="{:.2f}%".format(percentage_list[i] * 100))
+    plt.errorbar(times, max_distance_list[i], yerr=max_distance_std_list[i], label="{:.2f}%".format(percentage_list[i] * 100))
 plt.legend(loc='best')
-plt.show(block=False)
-
-plt.figure()
-if(dimension == "2D"):
-    plt.title("Output en función del input\n"
-              "{} - Regla: {}/{} - Espacio inicial = {}x{} - Espacio Total = {}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, total_rows, total_columns))
-else:
-    plt.title("Output en función del input\n"
-              "{} - Regla: {}/{} - Espacio inicial = {}x{}x{} - Espacio Total = {}x{}x{}".format(dimension, rules[0], rules[1], initial_rows, initial_columns, initial_depths, total_rows, total_columns, total_depths))
-
-plt.xlabel("Porcentaje inicial")
-plt.ylabel("Output")
-plt.bar(percentage_list, outputs, width=0.1)
-plt.xticks(percentage_list, [str(i*100) + "%" for i in percentage_list])
 plt.show()
