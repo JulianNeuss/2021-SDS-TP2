@@ -27,8 +27,7 @@ if args.output_path:
     DATA_PATH = args.output_path
 
 if args.save_video:
-    save_video = bool(args.save_video)
-
+    save_video = args.save_video.lower() in ['true', '1']
 if args.animation_path:
     ANIMATIONS_PATH = args.animation_path
 
