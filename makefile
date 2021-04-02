@@ -11,7 +11,7 @@ GenerateInitialFile: compile
 	java -cp out $(inputFilename) $(rows) $(columns) $(depths) $(initialRows) $(initialColumns) $(initialDepths) $(percentageAlive) $(dimension) $(outputFilename) $(maxIterations) $(endOnTouchBorder) simulation.generator.GenerateInitialFile
 
 SimulationApp: compile
-	java -cp out $(inputFilename) $(rows) $(columns) $(depths) $(initialRows) $(initialColumns) $(initialDepths) $(percentageAlive) $(dimension) $(outputFilename) $(maxIterations) $(endOnTouchBorder) simulation.SimulationApp
+	java -cp out $(inputFilename) $(rows) $(columns) $(depths) $(initialRows) $(initialColumns) $(initialDepths) $(percentageAlive) $(dimension) $(outputFilename) $(maxIterations) $(endOnTouchBorder) $(aroundAlive) $(aroundDead) simulation.SimulationApp
 
 visualizer:
 	@bash -c "cd visualization;source .env/bin/activate;python visualizer.py"
@@ -51,4 +51,10 @@ override maxIterations := -DmaxIterations=$(maxIterations)
 endif
 ifneq ($(endOnTouchBorder),)
 override endOnTouchBorder := -DendOnTouchBorder=$(endOnTouchBorder)
+endif
+ifneq ($(aroundAlive),)
+override aroundAlive := -DaroundAlive=$(aroundAlive)
+endif
+ifneq ($(aroundDead),)
+override aroundDead := -DaroundDead=$(aroundDead)
 endif
