@@ -76,7 +76,9 @@ public class SimulationApp {
                 str.append('\n');
                 List<List<Cell>> cells = parserResult.getCells2D();
                 boolean touchBorder = false;
-                for (int iteration = 0; (endOnTouchBorder && !touchBorder && (iteration < maxIterations)) || (!endOnTouchBorder && iteration < maxIterations); iteration++) {
+                for (int iteration = 0; ((endOnTouchBorder && !touchBorder && (iteration < maxIterations)) ||
+                        (!endOnTouchBorder && iteration < maxIterations)) &&
+                        MatrixOperations.aliveQty2D(cells) > 0; iteration++) {
                     touchBorder = MatrixOperations.touchBorder2D(cells);
                     str.append(MatrixOperations.aliveQty2D(cells)).append(' ').append(MatrixOperations.maxDistance2D(cells)).append('\n');
                     str.append('\n');
@@ -95,7 +97,9 @@ public class SimulationApp {
                 str.append('\n');
                 List<List<List<Cell>>> cells = parserResult.getCells3D();
                 boolean touchBorder = false;
-                for (int iteration = 0; (endOnTouchBorder && !touchBorder && (iteration < maxIterations)) || (!endOnTouchBorder && iteration < maxIterations); iteration++) {
+                for (int iteration = 0; ((endOnTouchBorder && !touchBorder && (iteration < maxIterations)) ||
+                        (!endOnTouchBorder && iteration < maxIterations)) &&
+                        MatrixOperations.aliveQty3D(cells) > 0; iteration++) {
                     touchBorder = MatrixOperations.touchBorder3D(cells);
                     str.append(MatrixOperations.aliveQty3D(cells)).append(' ').append(MatrixOperations.maxDistance3D(cells)).append('\n');
                     str.append('\n');
