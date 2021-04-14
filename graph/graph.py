@@ -74,7 +74,6 @@ plt.ylabel("Cantidad de celdas vivas")
 for i in range(0, len(alive_qty_list)):
     times = range(0, len(alive_qty_list[i]))
     plt.errorbar(times, alive_qty_list[i], yerr=alive_std_list[i], label="{:.2f}%".format(percentage_list[i] * 100))
-plt.legend(loc='best')
 plt.show(block=False)
 
 plt.figure()
